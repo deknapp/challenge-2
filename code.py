@@ -23,7 +23,10 @@ handle.close()
 zipcode_dict = {}
 for line in lines[1:]:
   split_line = line.split(',')
-  zipcode_dict[split_line[0]] = split_line[4][:-1] 
+  area_index = split_line[4][:-1]
+  area_state = split_line[1]
+  area = area_state + area_index
+  zipcode_dict[split_line[0]] = area 
 
 # For the silver plans, get a dictionary of rate area to plans in the area, 
 # and a dictionary of plans to costs.
@@ -35,12 +38,15 @@ area_to_plans_dict = {}
 for line in lines:
   split_line = line.split(',')
   if split_line[2] == 'Silver':
-    silver_plan_to_cost_dict[split_line[0]] = split_line[3]
-    area = split_line[4][:-1]
+    plan_name = split_line[0]
+    silver_plan_to_cost_dict[plan_name] = split_line[3]
+    area_index = split_line[4][:-1]
+    area_state = split_line[1]
+    area = area_state + area_index
     if area in area_to_plans_dict:
-      area_to_plans_dict[area].append(split_line[0])
+      area_to_plans_dict[area].append(plan_name)
     else:
-      area_to_plans_dict[area] = [split_line[0]]
+      area_to_plans_dict[area] = [plan_name]
 
 # Use the dictionaries acquired above to get the SLCSP for each zipcode and its rate.
 handle = open(SLCSP_FILE_NAME, 'r')
@@ -53,4 +59,8 @@ for zipcode in zipcodes:
   if plan_area in area_to_plans_dict:
     plans_in_area = area_to_plans_dict[plan_area]
     slcsp = get_slcsp(silver_plan_to_cost_dict, plans_in_area)
-  print(zipcode + ',' + silver_plan_to_cost_dict[slcsp])
+  if slcsp == '':
+    rate = ''
+  else:
+    rate = silver_plan_to_cost_dict[slcsp] 
+  print(zipcode + ',' + rate)
