@@ -1,0 +1,13 @@
+To run the code:
+
+python code.py [SLCSP_FILE_NAME] [PLANS_FILE_NAME] [ZIPCODE_FILE_NAME]
+
+SLCSP_FILE_NAME contains the ZIP Codes in the first column, for which we want to get the corresponding SLCSP.
+PLANS_FILE_NAME contains all the health plans in the U.S. on the marketplace.
+ZIPCODE_FILE_NAME contains a mapping of ZIP Code to county/counties & rate area(s).
+
+For example, if in the directory of the files given wtih the homework:
+
+python code.py slcsp.csv plans.csv zips.csv
+
+
