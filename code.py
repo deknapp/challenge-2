@@ -26,7 +26,12 @@ for line in lines[1:]:
   area_index = split_line[4][:-1]
   area_state = split_line[1]
   area = area_state + area_index
-  zipcode_dict[split_line[0]] = area 
+  zipcode = split_line[0]
+  # If a zipcode is in more than one rate area, the answer is ambiguous.  
+  if zipcode in zipcode_dict:
+    zipcode_dict[zipcode] = 'UNDEFINED' 
+  else:
+    zipcode_dict[zipcode] = area 
 
 # For the silver plans, get a dictionary of rate area to plans in the area, 
 # and a dictionary of plans to costs.
@@ -56,11 +61,11 @@ handle.close()
 zipcodes = [line.split(',')[0] for line in lines][1:]
 for zipcode in zipcodes:
   plan_area = zipcode_dict[zipcode]
-  if plan_area in area_to_plans_dict:
+  if plan_area != 'UNDEFINED' and plan_area in area_to_plans_dict:
     plans_in_area = area_to_plans_dict[plan_area]
     slcsp = get_slcsp(silver_plan_to_cost_dict, plans_in_area)
   if slcsp == '':
     rate = ''
   else:
     rate = silver_plan_to_cost_dict[slcsp] 
-  print(zipcode + ',' + rate)
+  print(zipcode + ',' + format(float(rate), '.2f'))
