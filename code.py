@@ -8,8 +8,13 @@ ZIPCODE_FILE_NAME = '../test_files/slcsp/zips.csv'
 # find the second lowest cost silver plan
 def get_slcsp(silver_plan_to_cost_dict, plans):
   plan_cost_list = [[plan, silver_plan_to_cost_dict[plan]] for plan in plans]
-  plan_cost_list = sorted(plan_cost_list.items(), key=lambda kv: kv[1])
-  return plan_cost_list[1][0]
+  plan_cost_list = sorted(plan_cost_list, key=lambda kv: kv[1])
+  if len(plan_cost_list) < 2:
+    return '' 
+  else:
+    if len(plan_cost_list[1]) < 1:
+      return ''
+    return plan_cost_list[1][0]
 
 handle = open(ZIPCODE_FILE_NAME, 'r')
 lines = handle.readlines()
@@ -18,8 +23,6 @@ zipcode_dict = {}
 for line in lines[1:]:
   split_line = line.split(',')
   zipcode_dict[split_line[0]] = split_line[4][:-1] 
-
-print(zipcode_dict)
 
 handle = open(PLANS_FILE_NAME)
 lines = handle.readlines()
@@ -30,10 +33,11 @@ for line in lines:
   split_line = line.split(',')
   if split_line[2] == 'Silver':
     silver_plan_to_cost_dict[split_line[0]] = split_line[3]
+    area = split_line[4][:-1]
     if split_line[4] in area_to_plans_dict:
-      area_to_plans_dict[split_line[4]].append(split_line[0])
+      area_to_plans_dict[area].append(split_line[0])
     else:
-      area_to_plans_dict[split_line[4]] = [split_line[0]]
+      area_to_plans_dict[area] = [split_line[0]]
 
 
 handle = open(SLCSP_FILE_NAME, 'r')
@@ -43,7 +47,6 @@ zipcodes = [line.split(',')[0] for line in lines][1:]
 print(lines[0])
 for zipcode in zipcodes:
   plan_area = zipcode_dict[zipcode]
-  slcsp = ''
   if plan_area in area_to_plans_dict:
     plans_in_area = area_to_plans_dict[plan_area]
     slcsp = get_slcsp(silver_plan_to_cost_dict, plans_in_area)
